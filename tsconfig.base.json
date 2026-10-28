@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "incremental": true,
+    "declaration": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "baseUrl": ".",
+    "paths": {
+      "@aqarflow/shared": ["packages/shared/src"],
+      "@aqarflow/shared/*": ["packages/shared/src/*"],
+      "@aqarflow/domain": ["packages/domain/src"],
+      "@aqarflow/domain/*": ["packages/domain/src/*"]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "aqarflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Real Estate CRM Platform for MENA",
+  "packageManager": "pnpm@8.15.4",
+  "engines": {
+    "node": ">=20.10.0",
+    "pnpm": ">=8.15.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "typecheck": "turbo run typecheck",
+    "db:migrate": "pnpm --filter @aqarflow/api prisma migrate dev",
+    "db:seed": "pnpm --filter @aqarflow/api prisma db seed",
+    "db:reset": "pnpm --filter @aqarflow/api prisma migrate reset",
+    "infra:up": "docker compose -f infra/docker/docker-compose.dev.yml up -d",
+    "infra:down": "docker compose -f infra/docker/docker-compose.dev.yml down",
+    "infra:logs": "docker compose -f infra/docker/docker-compose.dev.yml logs -f"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "prettier": "^3.2.5",
+    "turbo": "^1.13.0",
+    "typescript": "^5.4.0"
+  }
+}

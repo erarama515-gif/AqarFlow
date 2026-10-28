@@ -1,0 +1,1 @@
+﻿import { Module } from "@nestjs/common"; import { AccountingService } from "./application/accounting.service"; @Module({ providers: [AccountingService], exports: [AccountingService] }) export class AccountingModule {}

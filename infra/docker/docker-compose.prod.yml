@@ -1,0 +1,122 @@
+version: "3.9"
+
+# -----------------------------------------------------------------------------
+# AqarFlow — Production-ready stack
+#
+# Brings up: PostgreSQL (PostGIS) + Redis + MinIO + Mailpit (replaceable) +
+#            API service + Web app. All services are scoped to an internal
+#            network; only the web app and (optionally) the API gateway are
+#            exposed.
+#
+# Bootstrap:
+#   cp .env.example .env       # adjust secrets!
+#   docker compose -f infra/docker/docker-compose.prod.yml up -d --build
+#   docker compose ... exec api pnpm prisma migrate deploy
+#   docker compose ... exec api pnpm prisma db seed   # optional
+# -----------------------------------------------------------------------------
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aqarflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aqarflow}
+      POSTGRES_DB: ${POSTGRES_DB:-aqarflow}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aqarflow}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [internal]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    networks: [internal]
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-aqarflow}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-aqarflow-secret}
+    volumes:
+      - miniodata:/data
+    networks: [internal]
+
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      API_PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aqarflow}:${POSTGRES_PASSWORD:-aqarflow}@postgres:5432/${POSTGRES_DB:-aqarflow}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      PASSWORD_PEPPER: ${PASSWORD_PEPPER}
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-aqarflow}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-aqarflow-secret}
+      S3_BUCKET: ${S3_BUCKET:-aqarflow-media}
+      S3_FORCE_PATH_STYLE: "true"
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-AqarFlow <noreply@aqarflow.local>}
+      CORS_ORIGIN: ${APP_URL:-http://localhost:3001}
+      ROOT_DOMAIN: ${ROOT_DOMAIN:-aqarflow.local}
+      TENANT_RESOLUTION_MODE: ${TENANT_RESOLUTION_MODE:-jwt-only}
+      LOG_LEVEL: info
+    ports:
+      - "3000:3000"
+    networks: [internal, public]
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    ports:
+      - "3001:3001"
+    networks: [public]
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+    networks: [internal]
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
+
+networks:
+  internal:
+    driver: bridge
+  public:
+    driver: bridge

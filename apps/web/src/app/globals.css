@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'IBM Plex Sans Arabic', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sidebar-w: 248px;
+  --topbar-h: 56px;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+body {
+  @apply bg-ink-50 text-ink-950 antialiased;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: theme('colors.ink.300'); border-radius: 6px; border: 2px solid theme('colors.ink.50'); }
+::-webkit-scrollbar-thumb:hover { background: theme('colors.ink.400'); }
+
+.tnum { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium
+           transition-colors duration-150 disabled:opacity-50 disabled:pointer-events-none
+           focus-visible:outline-none focus-visible:shadow-focus;
+    height: 32px;
+  }
+  .btn-lg { height: 38px; @apply px-4 text-base; }
+  .btn-sm { height: 28px; @apply px-2.5 text-xs; }
+
+  .btn-primary   { @apply btn bg-ink-950 text-white hover:bg-ink-900; }
+  .btn-brand     { @apply btn bg-brand-700 text-white hover:bg-brand-800; }
+  .btn-secondary { @apply btn bg-white text-ink-900 border border-ink-200 hover:bg-ink-50; }
+  .btn-ghost     { @apply btn text-ink-700 hover:bg-ink-100; }
+  .btn-danger    { @apply btn bg-danger-600 text-white hover:bg-danger-700; }
+
+  .input {
+    @apply block w-full rounded-md border border-ink-200 bg-white px-3 py-1.5 text-sm
+           placeholder:text-ink-400 transition-shadow duration-150
+           focus:border-brand-600 focus:outline-none focus:shadow-focus;
+    height: 36px;
+  }
+  textarea.input { height: auto; @apply py-2; }
+  select.input { @apply pr-8; }
+  .label { @apply block text-xs font-medium text-ink-700 mb-1.5; }
+  .help  { @apply mt-1 text-2xs text-ink-500; }
+
+  .card        { @apply bg-white rounded-lg border border-ink-200; }
+  .card-hover  { @apply transition-colors duration-150 hover:border-ink-300; }
+  .card-header { @apply px-4 py-3 border-b border-ink-200 flex items-center justify-between; }
+  .card-body   { @apply p-4; }
+
+  .pill {
+    @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-2xs font-medium leading-none;
+    height: 20px;
+  }
+  .pill-neutral { @apply pill bg-ink-100 text-ink-700 ring-1 ring-inset ring-ink-200; }
+  .pill-success { @apply pill bg-success-50 text-success-700 ring-1 ring-inset ring-success-100; }
+  .pill-warn    { @apply pill bg-warn-50 text-warn-700 ring-1 ring-inset ring-warn-100; }
+  .pill-danger  { @apply pill bg-danger-50 text-danger-700 ring-1 ring-inset ring-danger-100; }
+  .pill-info    { @apply pill bg-info-50 text-info-700 ring-1 ring-inset ring-info-100; }
+  .pill-brand   { @apply pill bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-100; }
+
+  .dot { @apply inline-block w-1.5 h-1.5 rounded-full; }
+
+  .data-table { @apply w-full text-sm; }
+  .data-table thead {
+    @apply bg-ink-50 text-ink-500 text-2xs uppercase tracking-wider;
+  }
+  .data-table thead th {
+    @apply px-3 py-2 text-start font-medium border-b border-ink-200 whitespace-nowrap;
+  }
+  .data-table tbody td {
+    @apply px-3 py-2.5 align-middle border-b border-ink-100;
+  }
+  .data-table tbody tr {
+    @apply transition-colors hover:bg-ink-50/60;
+  }
+  .data-table tbody tr:last-child td { @apply border-b-0; }
+
+  .page-title { @apply text-xl font-semibold tracking-tight text-ink-950; }
+  .page-sub   { @apply text-sm text-ink-500; }
+  .section-title { @apply text-sm font-semibold text-ink-900; }
+
+  .kanban-col {
+    @apply flex-none w-72 rounded-lg bg-ink-100 p-2 border border-ink-200;
+  }
+  .kanban-card {
+    @apply card card-hover p-3 cursor-pointer select-none;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm text-ink-400
+           transition-colors hover:text-white hover:bg-ink-800;
+    height: 32px;
+  }
+  .nav-item-active {
+    @apply bg-ink-800 text-white;
+  }
+  .nav-section {
+    @apply px-2.5 mt-4 mb-1 text-2xs uppercase tracking-wider text-ink-500 font-medium;
+  }
+}
+
+@layer utilities {
+  .surface { @apply bg-white border border-ink-200 rounded-lg; }
+  .divider { @apply border-t border-ink-200; }
+}

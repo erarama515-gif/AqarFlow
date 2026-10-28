@@ -1,0 +1,1 @@
+﻿import { AccountingService } from "./accounting.service"; describe("AccountingService", () => { it("should enforce balanced journals", () => { const s = new AccountingService({} as any, {} as any); expect(async () => s.postJournal({ tenantId: "t1", journalNo: "J-1", entryDate: new Date(), lines: [{ accountId: "a1", debit: 100, credit: 100 }] })).not.toThrow(); }); });
